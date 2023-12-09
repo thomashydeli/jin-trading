@@ -9,6 +9,7 @@ regex==2022.7.25
 scipy==1.7.3
 statsmodels==0.13.2
 matplotlib
+empyrial
 seaborn
 tabulate
 yfinance
