@@ -19,13 +19,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 yfin.pdr_override()
-
-# loading secrets
-with open('secrets.json') as f:
-    secrets=json.load(f)
 
 def my_job():
 
@@ -197,7 +194,7 @@ def my_job():
 
     # Setup the email client
     print("sending out report as an email")
-    yag = yagmail.SMTP(secrets['email_addr'], secrets['email_pwd'])
+    yag = yagmail.SMTP(os.environ.get('EMAIL_ADDR'), os.environ.get('EMAIL_PWD'))
     # Email content
     contents = [messaging, 'test.pdf']
     # Sending the email
