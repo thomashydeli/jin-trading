@@ -26,19 +26,24 @@ yfin.pdr_override()
 
 def my_job():
 
-    # Create the parser
-    parser = argparse.ArgumentParser(description="Parsing parameters for stock portfolio rebalance")
+    # # Create the parser
+    # parser = argparse.ArgumentParser(description="Parsing parameters for stock portfolio rebalance")
 
-    # Add an argument
-    parser.add_argument('portfolio', type=str, help='Input stock tickers (comma-separated strings)')
-    parser.add_argument('balance', type=float, help='Current balance of your portfolio')
-    parser.add_argument('--benchmark', type=str, default='SPY', help='Benchmark stock ticker')
+    # # Add an argument
+    # parser.add_argument('portfolio', type=str, help='Input stock tickers (comma-separated strings)')
+    # parser.add_argument('balance', type=float, help='Current balance of your portfolio')
+    # parser.add_argument('--benchmark', type=str, default='SPY', help='Benchmark stock ticker')
 
-    # Parse the arguments
-    args = parser.parse_args()
+    # # Parse the arguments
+    # args = parser.parse_args()
+
+    # replacing arg parser with os environment variables
+    PORTFOLIO = os.getenv('PORTFOLIO', 'MSFT,NVDA,META,BAC,AXP,MCD,KO,AMZN,WMT,CVX,YUM').split(',')
+    BENCHMARK = os.getenv('BENCHMARK','SPY')
+    BALANCE = float(os.getenv('BALANCE', '5000'))
 
     # Split the string into a list
-    PORTFOLIO=args.portfolio.split(',')
+    # PORTFOLIO=args.portfolio.split(',')
     _PORTFOLIO=deepcopy(PORTFOLIO)
 
     PORTFOLIO_DATA=[
@@ -50,9 +55,9 @@ def my_job():
     ]
 
     print(f'parsed portfolio as: {PORTFOLIO}')
-    BENCHMARK=args.benchmark # Using SPY as the benchmark for comparison
+    # BENCHMARK=args.benchmark # Using SPY as the benchmark for comparison
     print(f'benchmark chosen as: {BENCHMARK}')
-    BALANCE=args.balance # start with a balance of $10,000
+    # BALANCE=args.balance # start with a balance of $10,000
 
 
     # getting weights using 3 years of data
@@ -204,7 +209,7 @@ def my_job():
 def main():
     scheduler = BackgroundScheduler(timezone=utc)
     # Schedule the job weekly on Sunday at 23:00 PST
-    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0)
+    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=7, minute=0) # temporarily switched to run on Mon 23 PST
     # Start the scheduler
     scheduler.start()
 
