@@ -209,7 +209,7 @@ def my_job():
 def main():
     scheduler = BackgroundScheduler(timezone=utc)
     # Schedule the job weekly on Sunday at 23:00 PST
-    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=7, minute=0) # temporarily switched to run on Mon 23 PST
+    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
     # Start the scheduler
     scheduler.start()
 
