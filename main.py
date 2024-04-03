@@ -226,7 +226,7 @@ def my_job():
     snapshot=str(datetime.now())[:10]
     final_query=';\n'.join(
         [
-            f"INSERT INTO transactions (snapshot, stock, share, tag) VALUES ('{snapshot}', '{stock}', {share}, 'test');" for stock, share in zip(PORTFOLIO,shares)
+            f"INSERT INTO transactions (snapshot, stock, share, price, tag) VALUES ('{snapshot}', '{stock}', {share}, {price_lookup[stock]}, 'test');" for stock, share in zip(PORTFOLIO,shares)
         ]
     )
     connection.execute(text(final_query)) # executing the query
