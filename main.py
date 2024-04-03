@@ -22,9 +22,17 @@ import numpy as np
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
+from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 yfin.pdr_override()
 
 def my_job():
+
+    # connecting to database:
+    DATABASE_URL=os.getenv('DATABASE_URL')
+    engine=create_engine(DATABASE_URL)
+
+    connection=engine.connect()
 
     # # Create the parser
     # parser = argparse.ArgumentParser(description="Parsing parameters for stock portfolio rebalance")
@@ -40,7 +48,17 @@ def my_job():
     # replacing arg parser with os environment variables
     PORTFOLIO = os.getenv('PORTFOLIO', 'MSFT,NVDA,META,BAC,AXP,MCD,KO,AMZN,WMT,CVX,YUM').split(',')
     BENCHMARK = os.getenv('BENCHMARK','SPY')
-    BALANCE = float(os.getenv('BALANCE', '5000'))
+    # BALANCE = float(os.getenv('BALANCE', '5000'))
+    # querying for BALANCE information if table exists
+    row_count=connection.execute(
+        text("SELECT COUNT(*) FROM transactions WHERE tag <> 'prod';")
+    ).fetchall()[0][0]
+    if row_count==0:
+        BALANCE = float(os.getenv('BALANCE', '5000'))
+    else:
+        last_transactions=connection.execute(
+            text("SELECT * FROM transactions WHERE snapshot=(SELECT MAX(snapshot) FROM transactions) AND tag = 'test';")
+        ).fetchall()
 
     # Split the string into a list
     # PORTFOLIO=args.portfolio.split(',')
@@ -53,6 +71,13 @@ def my_job():
             end=str(datetime.now())[:10]
         ).reset_index()[['Date','Close']] for stock in PORTFOLIO
     ]
+
+    if row_count != 0:
+        price_lookup={s:d.iloc[-1]['Close'] for s, d in zip(PORTFOLIO, PORTFOLIO_DATA)}
+        share_lookup={transaction[1]:transaction[2] for transaction in last_transactions}
+        BALANCE = 0
+        for s in PORTFOLIO:
+            BALANCE+=price_lookup[s] * share_lookup[s]
 
     print(f'parsed portfolio as: {PORTFOLIO}')
     # BENCHMARK=args.benchmark # Using SPY as the benchmark for comparison
@@ -197,6 +222,15 @@ def my_job():
     ])+f'.\nEstimated annualized return: {empyrial.CAGR}'
     print(f"message constructed as: {messaging}")
 
+    # preserve share for each ticker within PORTFOLIO as a row, and if share=0 just save it
+    snapshot=str(datetime.now())[:10]
+    final_query=';\n'.join(
+        [
+            f"INSERT INTO transactions (snapshot, stock, share, tag) VALUES ('{snapshot}', '{stock}', {share}, 'test');" for stock, share in zip(PORTFOLIO,shares)
+        ]
+    )
+    connection.execute(text(final_query)) # executing the query
+
     # Setup the email client
     print("sending out report as an email")
     yag = yagmail.SMTP(os.environ.get('EMAIL_ADDR'), os.environ.get('EMAIL_PWD'))
@@ -209,7 +243,9 @@ def my_job():
 def main():
     scheduler = BackgroundScheduler(timezone=utc)
     # Schedule the job weekly on Sunday at 23:00 PST
-    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
+    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=7, minute=0) # run on Tue 23 PST -> test
+    scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=7, minute=0) # run on Wed 23 PST -> test
+    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST -> test
     # Start the scheduler
     scheduler.start()
 

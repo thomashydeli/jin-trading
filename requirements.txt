@@ -16,3 +16,5 @@ yfinance
 yagmail
 dash
 APScheduler>=3.10,<4.0
+sqlalchemy
+psycopg2
