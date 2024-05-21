@@ -231,6 +231,8 @@ def my_job():
         ]
     )
     connection.execute(text(final_query)) # executing the query
+    connection.commit()
+    connection.close()
 
     # Setup the email client
     print("sending out report as an email")
