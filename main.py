@@ -53,6 +53,7 @@ def my_job():
     row_count=connection.execute(
         text("SELECT COUNT(*) FROM transactions WHERE tag <> 'prod';")
     ).fetchall()[0][0]
+    # transactions data now created
     if row_count==0:
         BALANCE = float(os.getenv('BALANCE', '5000'))
     else:
