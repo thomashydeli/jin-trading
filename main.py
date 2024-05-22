@@ -24,12 +24,14 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
+import re
 yfin.pdr_override()
 
 def my_job():
 
     # connecting to database:
     DATABASE_URL=os.getenv('DATABASE_URL')
+    DATABASE_URL=re.sub('postgres','postgresql',DATABASE_URL)
     engine=create_engine(DATABASE_URL)
 
     connection=engine.connect()
@@ -246,6 +248,7 @@ def my_job():
 def main():
     scheduler = BackgroundScheduler(timezone=utc)
     # Schedule the job weekly on Sunday at 23:00 PST
+    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=5, minute=30)
     scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=7, minute=0) # run on Tue 23 PST -> test
     scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=7, minute=0) # run on Wed 23 PST -> test
     scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST -> test
