@@ -76,8 +76,8 @@ def my_job():
         ).reset_index()[['Date','Close']] for stock in PORTFOLIO
     ]
 
+    price_lookup={s:d.iloc[-1]['Close'] for s, d in zip(PORTFOLIO, PORTFOLIO_DATA)}
     if row_count != 0:
-        price_lookup={s:d.iloc[-1]['Close'] for s, d in zip(PORTFOLIO, PORTFOLIO_DATA)}
         share_lookup={transaction[1]:transaction[2] for transaction in last_transactions}
         BALANCE = 0
         for s in PORTFOLIO:
