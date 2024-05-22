@@ -30,6 +30,7 @@ yfin.pdr_override()
 def my_job():
 
     # connecting to database:
+    print("retrieving portfolio and balance information")
     DATABASE_URL=os.getenv('DATABASE_URL')
     DATABASE_URL=re.sub('postgres','postgresql',DATABASE_URL)
     engine=create_engine(DATABASE_URL)
@@ -81,6 +82,8 @@ def my_job():
         BALANCE = 0
         for s in PORTFOLIO:
             BALANCE+=price_lookup[s] * share_lookup[s]
+    
+    print(f"balance retrieved as: {BALANCE}")
 
     print(f'parsed portfolio as: {PORTFOLIO}')
     # BENCHMARK=args.benchmark # Using SPY as the benchmark for comparison
@@ -246,12 +249,13 @@ def my_job():
 
 
 def main():
-    scheduler = BackgroundScheduler(timezone=utc)
-    # Schedule the job weekly on Sunday at 23:00 PST
-    scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=6, minute=0) # run on Wed 22 PST for testing
-    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
-    # Start the scheduler
-    scheduler.start()
+    print(f"program started..., ready to rebalance your portfolio")
+    # scheduler = BackgroundScheduler(timezone=utc)
+    # # Schedule the job weekly on Sunday at 23:00 PST
+    # scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=6, minute=0) # run on Wed 22 PST for testing
+    # scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
+    # # Start the scheduler
+    # scheduler.start()
 
     # Keep the script running
     try:
