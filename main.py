@@ -258,12 +258,14 @@ def main():
     # scheduler.start()
 
     # Keep the script running
-    try:
-        # Infinite loop to keep the main thread alive
-        while True:
-            pass
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
+    # try:
+    #     # Infinite loop to keep the main thread alive
+    #     while True:
+    #         pass
+    # except (KeyboardInterrupt, SystemExit):
+    #     scheduler.shutdown()
+
+    my_job()
 
 
 if __name__ == "__main__":
