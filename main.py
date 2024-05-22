@@ -248,10 +248,8 @@ def my_job():
 def main():
     scheduler = BackgroundScheduler(timezone=utc)
     # Schedule the job weekly on Sunday at 23:00 PST
-    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=5, minute=30)
-    scheduler.add_job(my_job, 'cron', day_of_week='tue', hour=7, minute=0) # run on Tue 23 PST -> test
-    scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=7, minute=0) # run on Wed 23 PST -> test
-    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST -> test
+    scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=6, minute=0) # run on Wed 22 PST for testing
+    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
     # Start the scheduler
     scheduler.start()
 
