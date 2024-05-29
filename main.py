@@ -79,9 +79,10 @@ def my_job():
     price_lookup={s:d.iloc[-1]['Close'] for s, d in zip(PORTFOLIO, PORTFOLIO_DATA)}
     if row_count != 0:
         share_lookup={transaction[1]:transaction[2] for transaction in last_transactions}
+        share_lookup_aligned={k:share_lookup.get(k,0) for k in _PORTFOLIO}
         BALANCE = 0
         for s in PORTFOLIO:
-            BALANCE+=price_lookup[s] * share_lookup[s]
+            BALANCE+=price_lookup[s] * share_lookup_aligned[s]
     
     print(f"balance retrieved as: {BALANCE}")
 
