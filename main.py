@@ -251,22 +251,20 @@ def my_job():
 
 def main():
     print(f"program started..., ready to rebalance your portfolio")
-    # scheduler = BackgroundScheduler(timezone=utc)
-    # # Schedule the job weekly on Sunday at 23:00 PST
-    # scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=6, minute=0) # run on Wed 22 PST for testing
-    # scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
-    # # Start the scheduler
-    # scheduler.start()
+    scheduler = BackgroundScheduler(timezone=utc)
+    # Schedule the job weekly on Sunday at 23:00 PST
+    scheduler.add_job(my_job, 'cron', day_of_week='wed', hour=6, minute=0) # run on Tue 22 PST for testing
+    scheduler.add_job(my_job, 'cron', day_of_week='mon', hour=7, minute=0) # run on Sun 23 PST
+    # Start the scheduler
+    scheduler.start()
 
     # Keep the script running
-    # try:
-    #     # Infinite loop to keep the main thread alive
-    #     while True:
-    #         pass
-    # except (KeyboardInterrupt, SystemExit):
-    #     scheduler.shutdown()
-
-    my_job()
+    try:
+        # Infinite loop to keep the main thread alive
+        while True:
+            pass
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
 
 
 if __name__ == "__main__":
